@@ -3,7 +3,7 @@ const roles = {
   2: "employee"
 }
 
-const checkPermissions = (user, type) => {
+function checkPermissions(user, type) {
   // The user is admin / superuser
   if(user.role && user.role === roles[1]){
     return true;
@@ -16,7 +16,7 @@ const checkPermissions = (user, type) => {
   return false;
 }
 
-const defaultPerms = (userType) => {
+function defaultPerms(userType){
   if(userType === roles[1]){
     return {
       create: true,

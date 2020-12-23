@@ -16,7 +16,7 @@ app
   .use(cors());
 
 // Project Specific Middlewares
-//app.use(logger).use("/api/admin-x", auth);
+  app.use(logger);
 
 // Binds React App with Express Server
 app.use(express.static(path.join(__dirname, "..", "build")));
@@ -30,5 +30,5 @@ app.get("*", (req, res) => {
   })
 });
 
-app.listen(process.env.PORT || 5200);
+app.listen(process.env.PORT || 5500);
 
