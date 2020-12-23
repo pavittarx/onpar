@@ -1,47 +1,65 @@
-const { mongo, db } = require('./../db/index');
+const { Err, Success } = require("./response");
+const { createUser, doesUserExist, updateUser } = require("./users");
 
-const { createUser, doesUserExist } = require("./users");
+const { mongo, db } = require("./../db/index");
 
-const bucket = new mongo.GridFSBucket(db, {bucketName: 'employees'}); 
+const { Readable } = require("stream");
+const { read } = require("fs");
 
-const validEmployeeId  = function(id){
-  if(!id) return false;
+const validEmployeeId = function (id) {
+  if (!id) return false;
 
   // remove .pdf , if exists
   const eId = id.trim().split(".")[0];
 
-  if(eId[0] !== 'E') return false;
+  if (eId[0] !== "E") return false;
 
   // remove E- & split the rest
-  const x_id = (eId.split('-')[1]).split("");
+  const x_id = eId.split("-")[1].split("");
 
-  return x_id.reduce((a,c) => {
-    if(a == false) return false;
+  return x_id.reduce((a, c) => {
+    if (a == false) return false;
 
-    return isNaN(c)? false : true;
+    return isNaN(c) ? false : true;
   }, true);
-  
-}
+};
 
-async function createEmployee(username, file){
+async function createEmployee(username, fileBuffer) {
+  // detach .pdf
+  const username = username.split(".")[0];
 
-  if(!validEmployeeId()) return `Invalid Employeed Id (username)`;
+  if (!validEmployeeId(username))
+    return Err(400, `Invalid Employeed Id (username)`);
+  const bucket = new mongo.GridFSBucket(await db, { bucketName: "employees" });
 
-  const uStream = bucket.openUploadStream(file);
+  const readStream = new Readable();
+  readStream.push(fileBuffer);
+  readStream.push(null);
 
-  uStream.on('error', () => {
-    return 'An error occured while making upload';
-  })
+  const uStream = bucket.openUploadStream(username);
 
-  uStream.on('finish', () => {
-    return `File uploaded successfully: ${uStream.id}`
-  })
+  readStream.pipe(uStream);
 
-  if(!(await doesUserExist())){
-    createUser({username, password: username, role: 'employee', id: uStream.id }); 
-  } // else update user
+  uStream.on("error", () => {
+    return Err(400, "An error occured while making upload");
+  });
+
+  uStream.on("finish", async () => {
+    if (!(await doesUserExist({ username }))) {
+      createUser({
+        username,
+        password: username,
+        role: "employee",
+        fileId: uStream.id,
+      });
+    } else {
+      updateUser({ username, role: "employee", fileId: uStream.id });
+    }
+
+    return Success(`File uploaded successfully: ${uStream.id}`);
+  });
 }
 
 module.exports = {
-  createEmployee
-}
+  createEmployee,
+};

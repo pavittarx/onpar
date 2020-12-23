@@ -3,7 +3,11 @@ const Router = require('express').Router();
 const multer = require('multer');
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage, limits: { fields: 1, fileSize: 6000000, files: 10, parts: 2 }});
+const upload = multer({ storage: storage, limits: { fields: 1, fileSize: 6000000, files: 10, parts: 100 }});
+
+// const upload = multer();
+
+const { createEmployee } = require("./../libs/employee");
 
 Router.all('/', (req, res, next) => {
   // Check user permission before accessing these routes
@@ -14,11 +18,22 @@ Router.get('/employees', (req, res) => {
   // Get employee details
 })
 
-Router.post('/employees', upload.array('files', 100), (req, res) => {
+Router.post('/employees', upload.array('file', 100), (req, res) => {
   // Create new employees
   const files = req.files;
 
-  console.log(files);
+  let status = false;
+
+  files.map(async (file) => {
+    if(file.mimetype !== 'application/pdf') return;
+
+    const username = file.originalname;
+    const result = await createEmployee(username, file.buffer);
+
+    console.log(result);
+  });
+
+  res.send(res.files);
 })
 
 Router.put('/employee/:username', (req, res) => {s
