@@ -14,7 +14,7 @@ app
   .use(express.urlencoded({ extended: true }))
   .use(express.json())
   .use(cors())
-  .use(express.static('dist'));
+  .use(express.static('build'));
 
 // Project Specific Middlewares
   app.use(logger);
@@ -26,7 +26,7 @@ app.use('/api', authRouter).use('/api', adminRouter);
 
 app.get("*", (req, res) => {
   res.status(200);
-  res.sendFile(path.join(__dirname, 'dist/index.html'));
+  res.sendFile(path.join(__dirname, '/build/index.html'));
 });
 
 app.listen(process.env.PORT || 3000, () => console.log("[Server Ready]: Listening"));
