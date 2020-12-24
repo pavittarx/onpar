@@ -24,9 +24,9 @@ const validEmployeeId = function (id) {
   }, true);
 };
 
-async function createEmployee(username, fileBuffer) {
+async function createEmployee(uname, fileBuffer) {
   // detach .pdf
-  const username = username.split(".")[0];
+  const username = uname.split(".")[0];
 
   if (!validEmployeeId(username))
     return Err(400, `Invalid Employeed Id (username)`);
