@@ -13,7 +13,8 @@ app
   .use(compression())
   .use(express.urlencoded({ extended: true }))
   .use(express.json())
-  .use(cors());
+  .use(cors())
+  .use(express.static('dist'));
 
 // Project Specific Middlewares
   app.use(logger);
@@ -25,10 +26,7 @@ app.use('/api', authRouter).use('/api', adminRouter);
 
 app.get("*", (req, res) => {
   res.status(200);
-  res.send({
-    "message": "Welcome! I hope you'd enjoy your stay."
-  })
+  res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
 
-app.listen(process.env.PORT || 6500);
-
+app.listen(process.env.PORT || 3000, () => console.log("[Server Ready]: Listening"));

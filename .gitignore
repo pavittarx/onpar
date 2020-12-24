@@ -13,7 +13,14 @@ server/.env
 /coverage
 
 # production
-/build
+/build 
+/dist 
+
+# react 
+app/.env
+app/build
+app/node_modules
+app/.eslintcache
 
 # misc
 .DS_Store
