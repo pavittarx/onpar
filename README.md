@@ -30,17 +30,23 @@ REACT_APP_DOMAIN = Your server's URL
 ## Overall Folder Structure
 
 `/index.js` (at root) - entry point
+
 `/src` - contains react specific code, rendered at "/"
+
 `/public` - static assets for building react
 
-`/routes` - api specific routes
+`/routes` - api specific routes 
+
 `/libs` - Javascript logic 
+
 `/db` - connection to mongo instance & other variables
 
 ## API Structure
 
 `/` - serves React app
+
 `/api/*` - serves unauthenticated routes
+
 `/api/admin/*` - serves authenticated routes only usable by admins
 
 ----
