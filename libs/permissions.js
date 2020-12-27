@@ -4,7 +4,7 @@ const roles = {
 }
 
 function checkRole(user, type){
-  if(roles.includes(type) && user.roles.includes(type)) return true;
+  if(Object.values(roles).includes(type) && user.roles && user.roles.includes(type)) return true;
 
   return false;
 }

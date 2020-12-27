@@ -40,23 +40,26 @@ async function createEmployee(uname, fileBuffer) {
 
   readStream.pipe(uStream);
 
-  uStream.on("error", () => {
-    return Err(400, "An error occured while making upload");
-  });
-
-  uStream.on("finish", async () => {
-    if (!(await doesUserExist({ username }))) {
-      createUser({
-        username,
-        password: username,
-        role: "employee",
-        fileId: uStream.id,
-      });
-    } else {
-      updateUser({ username, role: "employee", fileId: uStream.id });
-    }
-
-    return Success(`File uploaded successfully: ${uStream.id}`);
+  return new Promise((resolve, reject) => {
+    uStream.on("error", () => {
+      resolve(Err(400, "An error occured while making upload"));
+    });
+  
+    uStream.on("finish", async () => {
+      
+      if (!(await doesUserExist({ username }))) {
+        createUser({
+          username,
+          password: username,
+          role: "employee",
+          fileId: uStream.id,
+        });
+      } else {
+        updateUser({ username, role: "employee", fileId: uStream.id });
+      }
+  
+      resolve(Success(`File uploaded successfully: ${uStream.id}`));
+    });
   });
 }
 

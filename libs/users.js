@@ -48,7 +48,7 @@ async function updateUser({ username, role, fileId }) {
     },
   };
 
-  const status = await user.updateOne({ username }, update);
+  const status = await users.updateOne({ username }, update);
 
   return status
     ? Success(`User: ${username} successfully updated`)
@@ -98,7 +98,7 @@ async function authorize(creds) {
     user.password
   );
 
-  return { token };
+  return token;
 }
 
 // authenticate the logged in user
@@ -106,6 +106,8 @@ async function authenticate(creds) {
   const { token } = creds;
 
   const tokenData = await jwt.decode(token);
+
+
 
   if(!tokenData){
     return Err(400, `Invalid Token`);
@@ -134,4 +136,5 @@ module.exports = {
   deleteUser,
   getUser,
   authorize,
+  authenticate
 };

@@ -11,13 +11,14 @@ const upload = multer({
 const { authenticate } = require("./../libs/users");
 const { createEmployee } = require("./../libs/employee");
 
-const { Err, Success} = require("./../libs/response");
-const {precedence, checkPermission } = require("./../libs/permissions");
+const { Err, Success } = require("./../libs/response");
+const { checkRole } = require("./../libs/permissions");
 
-Router.all("/:route", async (req, res, next) => {
+Router.all("/:route", upload.array("file", 100), async (req, res, next) => {
   const token = req.headers.cookie && req.headers.cookie.split("=")[1];
 
   if (!token) {
+    console.log("No token");
     res.status(403).json(Err(403, "The user is not logged in."));
   }
 
@@ -29,18 +30,19 @@ Router.all("/:route", async (req, res, next) => {
   }
 
   if (auth && auth.success) {
-    req.body.user = auth;
+    const check = checkRole(auth.data, "admin");
 
-    
-    
+    console.log("> ", req.files, "/n/n/n");
+
+    res.locals.user = auth.data;
+    res.locals.files = req.files;
+
     next();
-  } else {
-    res.status(401).send(Err(`401`, "Unauthorized: Please login."));
   }
 });
 
 Router.get("/check", (req, res) => {
-  console.log("Check", req.bosdy.user);
+  console.log("Check", req.body.user);
 
   res.json({ user: req.body.user });
 });
@@ -54,24 +56,22 @@ Router.get("/employees", (req, res) => {
 
 Router.post("/employees", upload.array("file", 100), (req, res) => {
   // Create new employees
-  const files = req.files;
+  const files = res.locals.files;
 
-  let status = false;
-
-  files.map(async (file) => {
+  const result = files.map(async (file) => {
     if (file.mimetype !== "application/pdf") return;
 
     const username = file.originalname;
     const result = await createEmployee(username, file.buffer);
 
-    console.log(result);
+    return result;
   });
 
-  res.send(res.files);
+  res.status(200).json(result);
 });
 
 Router.put("/employee/:username", (req, res) => {
-  s;
+
   // Update Employees
 });
 

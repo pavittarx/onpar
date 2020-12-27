@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
@@ -42,40 +42,36 @@ const Home = () => {
 
   const history = useHistory();
 
-  useEffect(() => {
-    const endpoint = process.env.REACT_APP_DOMAIN + "/api/admin/check";
-
-    axios.get(endpoint).then((res) => {
-      setIsAdmin(true);
-      history.push('/admin');
-    });
-  }, [loggedIn]);
-
   const login = () => {
-    const endpoint = `${process.env.REACT_APP_DOMAIN}/api/login`.trim();
+    const endpoint = `${process.env.REACT_APP_DOMAIN}/api/login`;
+
+    console.log(endpoint);
 
     axios
-      .post(endpoint, { username, password })
+      .post(endpoint, { username, password }, { withCredentials: true })
       .then((res) => {
+        console.log("res", res);
+
         alert(res.data.message);
         setLoggedIn(true);
       })
       .catch((err) => {
-        console.log("Error", err.message);
-        setErr("An error occured while signing up");
+        console.log("Error", err);
+        setErr("An error occured while logging in.");
       });
   };
 
   const signup = () => {
-    const endpoint = `${process.env.REACT_APP_DOMAIN}/api/signup`.trim();
+    const endpoint = `${process.env.REACT_APP_DOMAIN}/api/signup`;
 
     axios
       .post(endpoint, { username, password })
       .then((res) => {
         alert(res.data.message);
+        console.log(res.data);
       })
       .catch((err) => {
-        console.log("Error", err.message);
+        console.log("Error", err);
         setErr("An error occured while signing up");
       });
   };
