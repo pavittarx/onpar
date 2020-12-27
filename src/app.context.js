@@ -4,10 +4,12 @@ const initialState = {
   loading: false,
   loggedIn: false,
   err: '',
+  isAdmin: false,
 
   setLoading: () => {},
   setLoggedIn: () => {},
-  setErr: () => {}
+  setErr: () => {},
+  setIsAdmin: () => {}
 }
 
 export default React.createContext(initialState);

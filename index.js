@@ -22,11 +22,11 @@ app
 // Binds React App with Express Server
 app.use(express.static(path.join(__dirname, "..", "build")));
 
-app.use('/api', authRouter).use('/api', adminRouter);
+app.use('/api', authRouter).use('/api/admin', adminRouter);
 
-app.get("*", (req, res) => {
+app.get("/", (req, res) => {
   res.status(200);
   res.sendFile(path.join(__dirname, '/build/index.html'));
 });
 
-app.listen(process.env.PORT || 3000, () => console.log("[Server Ready]: Listening"));
+app.listen(process.env.PORT || 5000, () => console.log("[Server Ready]: Listening"));
